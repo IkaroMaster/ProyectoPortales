@@ -1,0 +1,23 @@
+body{
+	margin: 0 auto;
+}
+
+#cabezera{
+	height: 50px;
+	background-color: #36C9F3;
+
+
+
+}
+
+#busquedaFlotante{
+
+	margin-top: 20px;
+	height: 50px;
+	background-color: #fff;
+	box-shadow: 3px 3px 8px rgba(0,0,0,0.5) ;
+	border-radius: 2%;
+	margin-right:10px;
+	margin-left: 50%;
+
+}
