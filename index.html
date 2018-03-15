@@ -9,14 +9,45 @@
 <body>
 
 
+	<input id="pac-input" class="controls" type="text" placeholder="Search Box">
+
 
 	<nav id="cabezera">
+
+		
+			Tipo de mapa:
+			<select  id="tipoMapa">
+				<option value="roadmap">Roadmap</option>
+				<option value="satellite">Satelite</option>
+				<option value="hybrid">Hibrido</option>
+				<option value="terrain">Terreno</option>
+
+			</select>
+
+		
+
+		Travel Mode:
+			<select id="travelMode">
+
+				<option value="DRIVING">Automovil</option>
+				<option value="BICYCLING">Bicicleta</option>
+				<option value="WALKING">A pie</option>
+				<option value="TRANSIT">Transito</option>
+				
+			</select>
 	</nav>
 
 	
-	<div id="busquedaFlotante">
-		<input type="search" id="buscador" placeholder="Busqueda">
+
+	<div id="mapa">
+
+
 	</div>
+
+
+	<hr>
+	<div id="directions"></div>
+
 
 
 	<script src="static/js/jquery.js"></script>
