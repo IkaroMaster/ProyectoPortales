@@ -1,4 +1,4 @@
- var mapa = null;
+ var map = null;
  var mapCoordsHonduras = {lat:14.641775, lng:-86.2470938};
 
  var direccion = null;
@@ -37,7 +37,7 @@ function createMap(_lat,_lon)
 		mapTypeId:'roadmap', //roadmap,satellite, hybrid, terrain
 		zoom: 8.03
 	};
-	mapa = new google.maps.Map(document.getElementById('mapa'),mapSettings);
+	map = new google.maps.Map(document.getElementById('mapa'),mapSettings);
 
 
 	//------------------creando marcadores
@@ -45,7 +45,7 @@ function createMap(_lat,_lon)
 	var image = 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png';
 
 	var markerSettings = {
-		map: mapa,
+		map: map,
 		position: mapCoords,
 		title: 'Usted esta aqui',
 		
@@ -58,8 +58,8 @@ function createMap(_lat,_lon)
 
 
 	 marker.addListener('dblclick', function() {
-   		 mapa.setZoom(14);
-    	mapa.setCenter(marker.getPosition());
+   		 map.setZoom(14);
+    	map.setCenter(marker.getPosition());
   	});
 
 
@@ -71,7 +71,7 @@ function createMap(_lat,_lon)
 	 //----Copan Ruinas
 
 	 var markerCopanRuinas = new google.maps.Marker({
-		map: mapa,
+		map: map,
 		position: {lat: 14.837396, lng: -89.141511 },
 		title: 'Las Ruinas de Copan'
 		
@@ -83,7 +83,7 @@ function createMap(_lat,_lon)
 
 	 //--Parque la tigra
 	 var markerTigra = new google.maps.Marker({
-		map: mapa,
+		map: map,
 		position: {lat: 14.238738, lng: -87.105231 },
 		title: 'Parque la tigra'
 		
@@ -93,7 +93,7 @@ function createMap(_lat,_lon)
 
 	 //--Celaque
 	 var markerCelaque = new google.maps.Marker({
-		map: mapa,
+		map: map,
 		position: {lat: 14.494261, lng: -87.105231 },
 		title: 'Celaque'
 		
@@ -110,7 +110,7 @@ function createMap(_lat,_lon)
 	dirService = new google.maps.DirectionsService();
 	dirDisplay = new google.maps.DirectionsRenderer();
 
-	dirDisplay.setMap(mapa);
+	dirDisplay.setMap(map);
 
 
 	//disparar el geocoder cuando la api de google se inicie con init y lo convierte un objeto
@@ -127,9 +127,9 @@ function createMap(_lat,_lon)
         
           //geocodeLatLng(geocoder, mapa, infowindow,marker);
           // geocodeLatLng1(geocoder, mapa, infowindow,marker);
-          clicke(geocoder, mapa, infowindow,markerTigra);
-          clicke(geocoder, mapa, infowindow,markerCelaque);
-          clicke(geocoder, mapa, infowindow,markerCopanRuinas);
+          clicke(geocoder, map, infowindow,markerTigra);
+          clicke(geocoder, map, infowindow,markerCelaque);
+          clicke(geocoder, map, infowindow,markerCopanRuinas);
 
 
 
@@ -140,78 +140,62 @@ function createMap(_lat,_lon)
 
 
 
-    var defaultBounds = new google.maps.LatLngBounds(
-  	new google.maps.LatLng(14.980859, -89.116405),
-  	new google.maps.LatLng(15.042930, -83.299860));
+ //    var defaultBounds = new google.maps.LatLngBounds(
+ //  	new google.maps.LatLng(14.980859, -89.116405),
+ //  	new google.maps.LatLng(15.042930, -83.299860));
 
-	var input = document.getElementById('searchTextField');
-	var options = {
-  		bounds: defaultBounds,
-  		types: ['establishment']
-	};
-          
-        
+	// var input = document.getElementById('searchTextField');
+	// var options = {
+ //  		bounds: defaultBounds,
+ //  		types: ['establishment'], //types: ['(cities)'],
+ //  		componentRestrictions: {country: 'hn'}
+	// };
+
+	// autocomplete = new google.maps.places.Autocomplete(input, options);
+
+	// autocomplete.bindTo('bounds', mapa);
+
+	// var input = document.getElementById('searchTextField');
+	// var options = {
+	//   types: ['(cities)'],
+	//   componentRestrictions: {country: 'hn'}
+	// };
+
+	// autocomplete = new google.maps.places.Autocomplete(input, options);
+
+
 	// Create the search box and link it to the UI element.
         var input = document.getElementById('pac-input');
         var searchBox = new google.maps.places.SearchBox(input);
-        mapa.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+        map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
 
         // Bias the SearchBox results towards current map's viewport.
-        mapa.addListener('bounds_changed', function() {
-          searchBox.setBounds(mapa.getBounds());
+        map.addListener('bounds_changed', function() {
+          searchBox.setBounds(map.getBounds());
         });
-
-        var markers = [];
-        // Listen for the event fired when the user selects a prediction and retrieve
-        // more details for that place.
-        searchBox.addListener('places_changed', function() {
-          var places = searchBox.getPlaces();
-
-          if (places.length == 0) {
-            return;
-          }
-
-          // Clear out the old markers.
-          markers.forEach(function(marker) {
-            marker.setMap(null);
-          });
-          markers = [];
-
-          // For each place, get the icon, name and location.
-          var bounds = new google.maps.LatLngBounds();
-          places.forEach(function(place) {
-            if (!place.geometry) {
-              console.log("Returned place contains no geometry");
-              return;
-            }
-            var icon = {
-              url: place.icon,
-              size: new google.maps.Size(71, 71),
-              origin: new google.maps.Point(0, 0),
-              anchor: new google.maps.Point(17, 34),
-              scaledSize: new google.maps.Size(25, 25)
-            };
-
-            // Create a marker for each place.
-            markers.push(new google.maps.Marker({
-              map: mapa,
-              icon: icon,
-              title: place.name,
-              position: place.geometry.location
-            }));
-
-            if (place.geometry.viewport) {
-              // Only geocodes have viewport.
-              bounds.union(place.geometry.viewport);
-            } else {
-              bounds.extend(place.geometry.location);
-            }
-          });
-          mapa.fitBounds(bounds);
-        });
-      
+          
+        
+	
 	
 
+}
+
+
+
+function geolocate() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(position) {
+      var geolocation = {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude
+      };
+      var circle = new google.maps.Circle({
+        center: geolocation,
+        radius: position.coords.accuracy
+      });
+      autocomplete.setBounds(circle.getBounds());
+    });
+  }
 }
 
 
@@ -221,7 +205,7 @@ function createMap(_lat,_lon)
 
 function clicke(geocoder,mapa,infowindow,ma){
 	ma.addListener('click', function(){
-		geocodeLatLng(geocoder, mapa, infowindow,ma);
+		geocodeLatLng(geocoder, map, infowindow,ma);
 
 		var desde = marker.getPosition();
 		var hasta = ma.getPosition();
@@ -275,12 +259,12 @@ function acercar(punto){
 
 	punto.addListener('dblclick', function() {
 
-	 	if(mapa.getZoom() >= 14){
-	 		mapa.setZoom(8);
-	 		mapa.setCenter(mapCoordsHonduras);
+	 	if(map.getZoom() >= 14){
+	 		map.setZoom(8);
+	 		map.setCenter(mapCoordsHonduras);
 	 	}else{
-   		 mapa.setZoom(14);
-    	mapa.setCenter(punto.getPosition());
+   		 map.setZoom(14);
+    	map.setCenter(punto.getPosition());
     	}
 
   	});
@@ -316,7 +300,7 @@ function geocodeLatLng(geocoder, map, infowindow,markers) {
               //direccion = results[1].formatted_address;
 
               //markers.addListener('click',function(){
-				infowindow.open(mapa, markers);
+				infowindow.open(map, markers);
               //});
               
               
