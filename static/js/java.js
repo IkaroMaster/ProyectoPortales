@@ -7,6 +7,9 @@
  var infowindow = null;
 
 
+ var autocomplete = null;
+
+
 
 
 function init (){
@@ -22,6 +25,11 @@ function init (){
 	}
 
 	// lat y lng son variable de google
+
+
+
+          
+
 
 
 }
@@ -107,10 +115,16 @@ function createMap(_lat,_lon)
 
 	 //convertir las variables de rutas en objetos
 
-	dirService = new google.maps.DirectionsService();
-	dirDisplay = new google.maps.DirectionsRenderer();
 
-	dirDisplay.setMap(map);
+	 var objConfigDR = {
+	 	map: map,
+	 	suppressMarkers: true
+	 }
+
+	dirService = new google.maps.DirectionsService();
+	dirDisplay = new google.maps.DirectionsRenderer(objConfigDR);
+
+	// dirDisplay.setMap(map);
 
 
 	//disparar el geocoder cuando la api de google se inicie con init y lo convierte un objeto
@@ -133,70 +147,132 @@ function createMap(_lat,_lon)
 
 
 
-
-
-
-
-
-
-
- //    var defaultBounds = new google.maps.LatLngBounds(
- //  	new google.maps.LatLng(14.980859, -89.116405),
- //  	new google.maps.LatLng(15.042930, -83.299860));
-
-	// var input = document.getElementById('searchTextField');
-	// var options = {
- //  		bounds: defaultBounds,
- //  		types: ['establishment'], //types: ['(cities)'],
- //  		componentRestrictions: {country: 'hn'}
-	// };
-
-	// autocomplete = new google.maps.places.Autocomplete(input, options);
-
-	// autocomplete.bindTo('bounds', mapa);
-
-	// var input = document.getElementById('searchTextField');
-	// var options = {
-	//   types: ['(cities)'],
-	//   componentRestrictions: {country: 'hn'}
-	// };
-
-	// autocomplete = new google.maps.places.Autocomplete(input, options);
-
-
+////////////////////////////////////////////////////codigo de barra de busquedas con autocompletacion//////////////
+	
 	// Create the search box and link it to the UI element.
         var input = document.getElementById('pac-input');
+
+
         var searchBox = new google.maps.places.SearchBox(input);
-        map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+        var options = {
+		  types: ['(cities)'],	
+		  componentRestrictions: {country: 'hn'}
+		};
+
+        autocomplete = new google.maps.places.Autocomplete(input, options);
+        //map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
 
         // Bias the SearchBox results towards current map's viewport.
         map.addListener('bounds_changed', function() {
           searchBox.setBounds(map.getBounds());
         });
-          
-        
-	
+
+        // Bias the SearchBox results towards current map's viewport.
+        map.addListener('bounds_changed', function() {
+          searchBox.setBounds(map.getBounds());
+        });
+
+        var markersBusqueda = [];
+        // Listen for the event fired when the user selects a prediction and retrieve
+        // more details for that place.
+        searchBox.addListener('places_changed', function() {
+          var places = searchBox.getPlaces();
+
+          if (places.length == 0) {
+            return;
+          }
+
+          // Clear out the old markers.
+          markersBusqueda.forEach(function(marker) {
+            marker.setMap(null);
+          });
+          markersBusqueda = [];
+
+          // For each place, get the icon, name and location.
+          var bounds = new google.maps.LatLngBounds();
+          places.forEach(function(place) {
+            if (!place.geometry) {
+              console.log("Returned place contains no geometry");
+              return;
+            }
+            var icon = {
+              url: place.icon,
+              size: new google.maps.Size(71, 71),
+              origin: new google.maps.Point(0, 0),
+              anchor: new google.maps.Point(17, 34),
+              scaledSize: new google.maps.Size(25, 25)
+            };
+
+            // Create a marker for each place.
+            markersBusqueda.push(new google.maps.Marker({
+              map: map,
+              icon: icon,
+              title: place.name,
+              position: place.geometry.location
+            }));
+
+            if (place.geometry.viewport) {
+              // Only geocodes have viewport.
+              bounds.union(place.geometry.viewport);
+            } else {
+              bounds.extend(place.geometry.location);
+            }
+          });
+          map.fitBounds(bounds);
+        });
+
+
+
+/////////////////////////////////CODIGO DE MARKERS CON INFORMACION BRINDAD POR GOOGLE/////////////////////
+	// Search for Google's office in Australia.
+	  var request = {
+	    location: map.getCenter(),
+	    radius: '500',
+	    query: 'Google Sydney'
+	  };
+
+	  var service = new google.maps.places.PlacesService(map);
+	  service.textSearch(request, callback);
 	
 
 }
 
 
-
-function geolocate() {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(function(position) {
-      var geolocation = {
-        lat: position.coords.latitude,
-        lng: position.coords.longitude
-      };
-      var circle = new google.maps.Circle({
-        center: geolocation,
-        radius: position.coords.accuracy
-      });
-      autocomplete.setBounds(circle.getBounds());
+// using the place ID and location from the PlacesService.
+function callback(results, status) {
+  if (status == google.maps.places.PlacesServiceStatus.OK) {
+    var marker = new google.maps.Marker({
+      map: map,
+      place: {
+        placeId: results[0].place_id,
+        location: results[0].geometry.location
+      }
     });
   }
 }
+
+
+
+
+
+
+
+
+// function geolocate() {
+//   if (navigator.geolocation) {
+//     navigator.geolocation.getCurrentPosition(function(position) {
+//       var geolocation = {
+//         lat: position.coords.latitude,
+//         lng: position.coords.longitude
+//       };
+//       var circle = new google.maps.Circle({
+//         center: geolocation,
+//         radius: position.coords.accuracy
+//       });
+//       autocomplete.setBounds(circle.getBounds());
+//     });
+//   }
+// }
 
 
 
@@ -229,6 +305,7 @@ function clicke(geocoder,mapa,infowindow,ma){
 			destination: hasta,
 			travelMode: 'DRIVING' ,// WALKING, BICYCLING
 			provideRouteAlternatives:true
+
 		};
 
 
@@ -250,7 +327,21 @@ function clicke(geocoder,mapa,infowindow,ma){
 
 	})
 
+
+
 }
+
+
+$(function(){
+
+
+	$('#btnBuscar').on('click',function (){
+		map.setCenter( {lat:13.3167,lng:-87.2167});
+		map.setZoom(10);
+
+	});
+
+});
 
 
 

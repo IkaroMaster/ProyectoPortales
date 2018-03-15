@@ -9,7 +9,13 @@
 <body>
 
 
+	<div>
+		
+
 	<input id="pac-input" class="controls" type="text" placeholder="Search Box">
+	</div>
+
+
 
 
 	<nav id="cabezera">
@@ -35,14 +41,13 @@
 				<option value="TRANSIT">Transito</option>
 				
 			</select>
+
+			<button id="btnBuscar">Cholutecar</button>
 	</nav>
 
 	
 
-	<div id="mapa">
-
-
-	</div>
+	<div id="mapa"></div>
 
 
 	<hr>
@@ -52,6 +57,8 @@
 
 	<script src="static/js/jquery.js"></script>
 	<script src="static/js/java.js"></script>
-	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBy2882xLIW4PPZKiJam1WJz3m935HXzbs&callback=init"></script>
+	<!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBy2882xLIW4PPZKiJam1WJz3m935HXzbs&callback=init"></script> -->
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBy2882xLIW4PPZKiJam1WJz3m935HXzbs&libraries=places&callback=init" async defer></script>
+
 </body>
 </html>
